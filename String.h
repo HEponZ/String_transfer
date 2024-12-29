@@ -10,86 +10,28 @@ private:
 	static int count;
 public:
 	String() : String(nullptr, 80) {};
-	String(int size) : String(nullptr, size) {};
-	String(char* string_S, int size_S) : string{ new char[size_S] }, size{ size_S }
-	{
-		count++;
-		if (string_S)
-		{
-			strcpy_s(string, size_S, string_S);
-		}
-	}
-	String(String&& string_S) : string{ string_S.string }, size{ string_S.size }
-	{
-		string_S.string = nullptr;
-		string_S.size = 0;
-		count++;
-	}
+	explicit String(int size) : String(nullptr, size) {};
+	explicit String(char* string) : String(string, strlen(string) + 1) {};
+	String(char* string_S, int size_S);
+	String(String&& string_S);
+	String(const String& string_S) : string{ string_S.string }, size{ string_S.size } { count++; }
 
-	const char* get_string()
-	{
-		return string;
-	}
-	const int get_size()
-	{
-		return size;
-	}
-	void set_string(const char* string_S)
-	{
-		size = strlen(string) + 1;
+	const char* get_string() { return string; }
+	const int get_size() { return size; }
+	void set_string(const char* string_S);
 
-		if (string)
-		{
-			delete[] string;
-		}
-		string = new char[size];
-		strcpy_s(string, size, string_S);
-	}
+	void print() { printf("%s\n", string); }
+	static int get_count() { return count; }
 
-	void print();
-	static int get_count()
-	{
-		return count;
-	}
+	char& operator[](int index) { return string[index]; }
 
-	char& operator[](int index)
-	{
-		return string[index];
-	}
+	char& operator[](int index) const { return string[index]; }
 
-	char& operator[](int index) const
-	{
-		return string[index];
-	}
-
-	int operator()(char symbol)
-	{
-		for (int i{ 0 }; i < strlen(string); i++)
-		{
-			if (string[i] == symbol)
-			{
-				return i;
-			}
-		}
-
-		return -1;
-	}
+	int operator()(char symbol);
 
 	explicit operator int() const { return strlen(string); }
 
-	friend istream& operator>> (istream& my_cin, String& str)
-	{
-		char buffer[100]{};
+	friend istream& operator>> (istream& my_cin, String& str);
 
-		gets_s(buffer);
-		strcpy_s(str.string, strlen(buffer) + 1, buffer);
-
-		return my_cin;
-	}
-
-	~String()
-	{
-		count--;
-		delete[] string;
-	}
+	~String();
 };
